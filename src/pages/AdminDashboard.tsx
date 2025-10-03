@@ -66,8 +66,9 @@ const AdminDashboard: React.FC = () => {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [chefs, setChefs] = useState<Chef[]>([]);
   const [showMenuForm, setShowMenuForm] = useState(false);
+  const [showChefForm, setShowChefForm] = useState(false);
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
-  
+
   const [menuForm, setMenuForm] = useState({
     name: '',
     description: '',
@@ -75,6 +76,13 @@ const AdminDashboard: React.FC = () => {
     category: 'veg',
     isSpecialOfDay: false,
     isRecommended: false
+  });
+
+  const [chefForm, setChefForm] = useState({
+    username: '',
+    email: '',
+    password: '',
+    role: 'chef' as 'chef' | 'admin'
   });
 
   useEffect(() => {
@@ -174,6 +182,25 @@ const AdminDashboard: React.FC = () => {
       toast.success(`Chef ${isActive ? 'activated' : 'deactivated'} successfully!`);
     } catch (error) {
       toast.error('Failed to update chef status');
+    }
+  };
+
+  const handleChefFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      await axios.post('http://localhost:5000/api/auth/register', chefForm);
+      toast.success('Staff member created successfully!');
+      setShowChefForm(false);
+      setChefForm({
+        username: '',
+        email: '',
+        password: '',
+        role: 'chef'
+      });
+      fetchChefs();
+    } catch (error) {
+      toast.error('Failed to create staff member');
     }
   };
 
@@ -492,8 +519,17 @@ const AdminDashboard: React.FC = () => {
 
         {activeTab === 'chefs' && (
           <div className="space-y-6">
-            <h2 className="text-2xl font-semibold">Chef Management</h2>
-            
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-semibold">Chef Management</h2>
+              <button
+                onClick={() => setShowChefForm(true)}
+                className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors flex items-center space-x-2"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Add Staff</span>
+              </button>
+            </div>
+
             <div className="bg-white rounded-xl shadow-lg overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
@@ -572,6 +608,86 @@ const AdminDashboard: React.FC = () => {
                 </table>
               </div>
             </div>
+
+            {showChefForm && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md">
+                  <h2 className="text-2xl font-bold text-gray-800 mb-4">Add Staff Member</h2>
+
+                  <form onSubmit={handleChefFormSubmit} className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                      <input
+                        type="text"
+                        value={chefForm.username}
+                        onChange={(e) => setChefForm(prev => ({ ...prev, username: e.target.value }))}
+                        required
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                      <input
+                        type="email"
+                        value={chefForm.email}
+                        onChange={(e) => setChefForm(prev => ({ ...prev, email: e.target.value }))}
+                        required
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                      <input
+                        type="password"
+                        value={chefForm.password}
+                        onChange={(e) => setChefForm(prev => ({ ...prev, password: e.target.value }))}
+                        required
+                        minLength={6}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                      <select
+                        value={chefForm.role}
+                        onChange={(e) => setChefForm(prev => ({ ...prev, role: e.target.value as 'chef' | 'admin' }))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      >
+                        <option value="chef">Chef</option>
+                        <option value="admin">Admin</option>
+                      </select>
+                    </div>
+
+                    <div className="flex space-x-3">
+                      <button
+                        type="submit"
+                        className="flex-1 bg-orange-500 text-white py-2 rounded-md font-semibold hover:bg-orange-600 transition-colors"
+                      >
+                        Create Staff
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowChefForm(false);
+                          setChefForm({
+                            username: '',
+                            email: '',
+                            password: '',
+                            role: 'chef'
+                          });
+                        }}
+                        className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-md font-semibold hover:bg-gray-400 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

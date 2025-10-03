@@ -11,8 +11,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  login: (username: string, password: string) => Promise<void>;
-  register: (userData: any) => Promise<void>;
+  login: (username: string, password: string) => Promise<User>;
   logout: () => void;
   isLoading: boolean;
 }
@@ -40,34 +39,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(false);
   }, [token]);
 
-  const login = async (username: string, password: string) => {
+  const login = async (username: string, password: string): Promise<User> => {
     try {
       const response = await axios.post('http://localhost:5000/api/auth/login', {
         username,
         password
       });
-      
+
       const { token: newToken, user: userData } = response.data;
-      
+
       setToken(newToken);
       setUser(userData);
       localStorage.setItem('token', newToken);
       axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
-    } catch (error) {
-      throw error;
-    }
-  };
 
-  const register = async (userData: any) => {
-    try {
-      const response = await axios.post('http://localhost:5000/api/auth/register', userData);
-      
-      const { token: newToken, user: newUser } = response.data;
-      
-      setToken(newToken);
-      setUser(newUser);
-      localStorage.setItem('token', newToken);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+      return userData;
     } catch (error) {
       throw error;
     }
@@ -84,7 +70,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user,
     token,
     login,
-    register,
     logout,
     isLoading
   };
