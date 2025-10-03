@@ -52,7 +52,7 @@ async function seedAdmin() {
 
     const admin = new User({
       username: 'dheeraj',
-      email: 'dheeraj@restaurant.com',
+      email: 'r210432@rguktrkv.ac.in',
       password: hashedPassword,
       role: 'admin',
       isActive: true
