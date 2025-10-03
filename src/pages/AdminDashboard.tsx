@@ -1,21 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell
-} from 'recharts';
+import { Line, Bar } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
 import { DollarSign, ShoppingBag, TrendingUp, Users, Plus, CreditCard as Edit, Trash2, Star, ToggleLeft, ToggleRight } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 interface AnalyticsData {
   totalOrders: number;
@@ -244,32 +253,59 @@ const AdminDashboard: React.FC = () => {
               {/* Daily Sales Chart */}
               <div className="bg-white p-6 rounded-xl shadow-lg">
                 <h3 className="text-xl font-semibold mb-4">Daily Sales (Last 30 Days)</h3>
-                <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={analytics.dailySales}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="_id" />
-                    <YAxis />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="revenue" stroke="#8884d8" strokeWidth={2} />
-                  </LineChart>
-                </ResponsiveContainer>
+                <div className="h-[300px]">
+                  <Line
+                    data={{
+                      labels: analytics.dailySales.map(item => item._id),
+                      datasets: [
+                        {
+                          label: 'Revenue',
+                          data: analytics.dailySales.map(item => item.revenue),
+                          borderColor: 'rgb(136, 132, 216)',
+                          backgroundColor: 'rgba(136, 132, 216, 0.5)',
+                          tension: 0.4,
+                        },
+                      ],
+                    }}
+                    options={{
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      plugins: {
+                        legend: {
+                          display: true,
+                        },
+                      },
+                    }}
+                  />
+                </div>
               </div>
 
               {/* Popular Items Chart */}
               <div className="bg-white p-6 rounded-xl shadow-lg">
                 <h3 className="text-xl font-semibold mb-4">Popular Items</h3>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={analytics.popularItems.map(item => ({
-                    name: item.item[0]?.name || 'Unknown',
-                    count: item.count
-                  }))}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="count" fill="#8884d8" />
-                  </BarChart>
-                </ResponsiveContainer>
+                <div className="h-[300px]">
+                  <Bar
+                    data={{
+                      labels: analytics.popularItems.map(item => item.item[0]?.name || 'Unknown'),
+                      datasets: [
+                        {
+                          label: 'Orders',
+                          data: analytics.popularItems.map(item => item.count),
+                          backgroundColor: 'rgba(136, 132, 216, 0.8)',
+                        },
+                      ],
+                    }}
+                    options={{
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      plugins: {
+                        legend: {
+                          display: false,
+                        },
+                      },
+                    }}
+                  />
+                </div>
               </div>
             </div>
           </div>
