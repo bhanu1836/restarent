@@ -37,7 +37,7 @@ const User = mongoose.model('User', userSchema);
 
 async function seedAdmin() {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
+    await mongoose.connect("mongodb+srv://bhanu:1234@nodeexpress.vkh6d.mongodb.net/dheeraj?retryWrites=true&w=majority&appName=nodeExpress");
     console.log('Connected to MongoDB');
 
     const existingAdmin = await User.findOne({ username: 'dheeraj' });
