@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
@@ -43,17 +42,14 @@ async function seedAdmin() {
     const existingAdmin = await User.findOne({ username: 'dheeraj' });
 
     if (existingAdmin) {
-      console.log('Admin user "dheeraj" already exists');
-      await mongoose.connection.close();
-      return;
+      console.log('Admin user "dheeraj" already exists, deleting and recreating...');
+      await User.deleteOne({ username: 'dheeraj' });
     }
-
-    const hashedPassword = await bcrypt.hash('dheeraj123', 10);
 
     const admin = new User({
       username: 'dheeraj',
       email: 'r210432@rguktrkv.ac.in',
-      password: hashedPassword,
+      password: 'dheeraj123',
       role: 'admin',
       isActive: true
     });
