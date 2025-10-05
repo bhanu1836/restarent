@@ -29,10 +29,7 @@ app.use('/api/reviews', require('./routes/reviews'));
 app.use('/api/admin', require('./routes/admin'));
 
 // MongoDB Connection
-mongoose.connect(process.env.MONGODB_URI || "mongodb+srv://bhanu:1234@nodeexpress.vkh6d.mongodb.net/dheeraj?retryWrites=true&w=majority&appName=nodeExpress", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+mongoose.connect(process.env.MONGODB_URI || "mongodb+srv://bhanu:1234@nodeexpress.vkh6d.mongodb.net/dheeraj?retryWrites=true&w=majority&appName=nodeExpress")
 .then(() => console.log('MongoDB Connected'))
 .catch(err => console.log('MongoDB Connection Error:', err));
 
